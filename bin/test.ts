@@ -1,21 +1,16 @@
-#!/usr/bin/env node
-import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
-import { TestStack } from '../lib/test-stack';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
 
-const app = new cdk.App();
-new TestStack(app, 'TestStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
+import { App, Stack } from '@aws-cdk/core';
+import { DataLakeStorage } from 'aws-analytics-reference-architecture';
+import { DataGenerator } from 'aws-analytics-reference-architecture';
+import { Dataset } from 'aws-analytics-reference-architecture';
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
-
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+const mockApp = new App();
+const stack = new Stack(mockApp, 'testing-stack');
+const lake = new DataLakeStorage(stack, 'testing-lake', {});
+new DataGenerator(stack, 'testing-generator', {
+  sinkArn: lake.rawBucket.bucketArn,
+  dataset: Dataset.RETAIL_1GB_STORE_SALE,
+  frequency: 30,
 });
